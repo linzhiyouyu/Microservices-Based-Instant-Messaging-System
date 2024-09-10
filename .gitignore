@@ -1,0 +1,11 @@
+/cmake-build-debug/
+/.idea/
+config.json
+*.swp
+*.mp4
+*.mkv
+*.avi
+*.flv
+*.mov
+*.wmv
+main.cpp
