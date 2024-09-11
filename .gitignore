@@ -11,3 +11,4 @@ config.json
 *.wmv
 main.cpp
 main
+!*.?* 
