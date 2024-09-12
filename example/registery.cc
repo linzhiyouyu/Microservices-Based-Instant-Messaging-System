@@ -11,10 +11,10 @@ DEFINE_string(access_host, "127.0.0.1:9090", "当前实例的外部访问地址"
 
 int main(int argc, char* argv[]) {
     google::ParseCommandLineFlags(&argc, &argv, true);
-    init_logger(FLAGS_run_mode, FLAGS_log_file, FLAGS_log_level);
-    // Registry::ptr rclient = std::make_shared<Registry>(FLAGS_etcd_host);
-    // std::string service_instance = "friend/instance";
-    // rclient->registry(FLAGS_base_service + FLAGS_instance_name, FLAGS_access_host);
-    // std::this_thread::sleep_for(std::chrono::seconds(600));
+    //init_logger(FLAGS_run_mode, FLAGS_log_file, FLAGS_log_level);
+    Registry::ptr rclient = std::make_shared<Registry>(FLAGS_etcd_host);
+    std::string service_instance = "friend/instance";
+    rclient->registry(FLAGS_base_service + FLAGS_instance_name, FLAGS_access_host);
+    std::this_thread::sleep_for(std::chrono::seconds(600));
     return 0;
 }
