@@ -9,7 +9,7 @@
 #include <string>
 #include <functional>
 
-using namespace lcz_zpy;
+
 //服务注册客户端类
 class Registry {
 public:
@@ -54,26 +54,26 @@ public:
             if(_put_cb)
                 _put_cb(resp.key(i), resp.value(i).as_string());
         //2. 然后进行事件监控，监控数据发生的改变并调用对应回调来处理 
-        //_watcher = std::make_shared<etcd::Watcher>(*_client.get(), basedir, std::bind(&Discovery::callback, std::placeholders::_1), true);
+        _watcher = std::make_shared<etcd::Watcher>(*_client.get(), basedir, std::bind(&Discovery::callback, this, std::placeholders::_1), true);
     }
 private:
-    // void callback(const etcd::Response& resp) {
-    //     if(resp.is_ok() == false) {
-    //         ERROR("收到一个错误的事件通知: {}", resp.error_message());
-    //         return;
-    //     }
-    //     for(auto&& ev : resp.events()) {
-    //         if(ev.event_type() == etcd::Event::EventType::PUT) {
-    //             if(_put_cb)
-    //                 _put_cb(ev.kv().key(), ev.kv().as_string());
-    //             DEBUG("新增服务: {}-{}", ev.kv().key(), ev.kv().as_string());
-    //         } else if(ev.event_type() == etcd::Event::EventType::DELETE_) { 
-    //             if(_del_cb)
-    //                 _del_cb(ev.prev_kv().key(), ev.prev_kv().as_string());
-    //             DEBUG("下线服务: {}-{}", ev.prev_kv().key(), ev.prev_kv().as_string());
-    //         }
-    //     }
-    // }
+    void callback(const etcd::Response& resp) {
+        if(resp.is_ok() == false) {
+            ERROR("收到一个错误的事件通知: {}", resp.error_message());
+            return;
+        }
+        for(auto&& ev : resp.events()) {
+            if(ev.event_type() == etcd::Event::EventType::PUT) {
+                if(_put_cb)
+                    _put_cb(ev.kv().key(), ev.kv().as_string());
+                DEBUG("新增服务: {}-{}", ev.kv().key(), ev.kv().as_string());
+            } else if(ev.event_type() == etcd::Event::EventType::DELETE_) { 
+                if(_del_cb)
+                    _del_cb(ev.prev_kv().key(), ev.prev_kv().as_string());
+                DEBUG("下线服务: {}-{}", ev.prev_kv().key(), ev.prev_kv().as_string());
+            }
+        }
+    }
 private:
     notify _put_cb;
     notify _del_cb;
