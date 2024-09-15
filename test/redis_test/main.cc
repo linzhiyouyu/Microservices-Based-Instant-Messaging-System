@@ -1,75 +1,100 @@
-#include <sw/redis++/redis.h>
+#include "../../code/server/common/redis.hpp"
+
 #include <gflags/gflags.h>
-#include <iostream>
-#include <chrono>
-#include <vector>
+#include <thread>
+
+DEFINE_bool(run_mode, false, "程序的运行模式，false-调试； true-发布；");
+DEFINE_string(log_file, "", "发布模式下，用于指定日志的输出文件");
+DEFINE_int32(log_level, 0, "发布模式下，用于指定日志输出等级");
+
 DEFINE_string(ip, "127.0.0.1", "这是服务器的IP地址，格式：127.0.0.1");
-DEFINE_int32(port, 6379, "这是服务端的端口，格式：6379");
+DEFINE_int32(port, 6379, "这是服务器的端口, 格式: 8080");
 DEFINE_int32(db, 0, "库的编号：默认0号");
-DEFINE_bool(keep_alive, true, "是否进行长连接保活，默认为true");
+DEFINE_bool(keep_alive, true, "是否进行长连接保活");
 
-void print(sw::redis::Redis& client) {
-    auto user1 = client.get("会话ID1");
-    if(user1)
-        std::cout << *user1 << std::endl;
-    auto user2 = client.get("会话ID2");
-    if(user2)
-        std::cout << *user2 << std::endl;
-    auto user3 = client.get("会话ID3");
-    if(user3)
-        std::cout << *user3 << std::endl;
-    auto user4 = client.get("会话ID4");
-    if(user4)
-        std::cout << *user4 << std::endl;
-    auto user5 = client.get("会话ID5");
-    if(user5)
-        std::cout << *user5 << std::endl;
+
+void session_test(const std::shared_ptr<sw::redis::Redis> &client)
+{
+    chat_im::Session ss(client);
+    ss.append("会话ID1", "用户ID1");
+    ss.append("会话ID2", "用户ID2");
+    ss.append("会话ID3", "用户ID3");
+    ss.append("会话ID4", "用户ID4");
+
+    ss.remove("会话ID2");
+    ss.remove("会话ID3");
+
+    auto res1 = ss.uid("会话ID1");
+    if (res1)
+        std::cout << *res1 << std::endl;
+    auto res2 = ss.uid("会话ID2");
+    if (res2)
+        std::cout << *res2 << std::endl;
+    auto res3 = ss.uid("会话ID3");
+    if (res3)
+        std::cout << *res3 << std::endl;
+    auto res4 = ss.uid("会话ID4");
+    if (res4)
+        std::cout << *res4 << std::endl;
 }
 
-void add_string(sw::redis::Redis& client) {
-    client.set("会话ID1", "用户ID1");
-    client.set("会话ID2", "用户ID2");
-    client.set("会话ID3", "用户ID3");
-    client.set("会话ID4", "用户ID4");
-    client.set("会话ID5", "用户ID5");
+void status_test(const std::shared_ptr<sw::redis::Redis> &client)
+{
+    chat_im::Status status(client);
+    status.append("用户ID1");
+    status.append("用户ID2");
+    status.append("用户ID3");
 
-    client.del("会话ID3");
-    client.set("会话ID5", "用户ID555");
-    print(client);
+    status.remove("用户ID2");
+
+    if (status.exists("用户ID1"))
+        std::cout << "用户1在线！" << std::endl;
+    if (status.exists("用户ID2"))
+        std::cout << "用户2在线！" << std::endl;
+    if (status.exists("用户ID3"))
+        std::cout << "用户3在线！" << std::endl;
 }
 
-void expire(sw::redis::Redis& client) {
-    client.set("会话ID1", "用户ID111", std::chrono::milliseconds(1000));
-    print(client);
-    std::cout << "休眠2s" << "\n";
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    print(client);
+void code_test(const std::shared_ptr<sw::redis::Redis> &client)
+{
+    chat_im::Codes codes(client);
+    codes.append("验证码ID1", "验证码1");
+    codes.append("验证码ID2", "验证码2");
+    codes.append("验证码ID3", "验证码3");
+
+    codes.remove("验证码ID2");
+
+    auto y1 = codes.code("验证码ID1");
+    auto y2 = codes.code("验证码ID2");
+    auto y3 = codes.code("验证码ID3");
+    if (y1)
+        std::cout << *y1 << std::endl;
+    if (y2)
+        std::cout << *y2 << std::endl;
+    if (y3)
+        std::cout << *y3 << std::endl;
+
+    std::this_thread::sleep_for(std::chrono::seconds(4));
+    auto y4 = codes.code("验证码ID1");
+    auto y5 = codes.code("验证码ID2");
+    auto y6 = codes.code("验证码ID3");
+    if (!y4)
+        std::cout << "验证码ID1不存在" << std::endl;
+    if (!y5)
+        std::cout << "验证码ID2不存在" << std::endl;
+    if (!y6)
+        std::cout << "验证码ID3不存在" << std::endl;
 }
 
-void list_test(sw::redis::Redis& client) {
-    client.rpush("群聊1", "成员1");
-    client.rpush("群聊1", "成员2");
-    client.rpush("群聊1", "成员3");
-    client.rpush("群聊1", "成员4");
-    client.rpush("群聊1", "成员5");
-    client.rpush("群聊1", "成员6");
-    std::vector<std::string> ans;
-    client.lrange("群聊1", 0, -1, std::back_inserter(ans));
-    for(auto&& str : ans)
-        std::cout << str << " ";
-    std::cout << std::endl;
-}
-
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[])
+{
     google::ParseCommandLineFlags(&argc, &argv, true);
-    sw::redis::ConnectionOptions opts;
-    opts.host = FLAGS_ip;
-    opts.port = FLAGS_port;
-    opts.db = FLAGS_db;
-    opts.keep_alive = FLAGS_keep_alive;
-    sw::redis::Redis client(opts);
-    add_string(client);
-    expire(client);
-    list_test(client);
+    // bite_im::init_logger(FLAGS_run_mode, FLAGS_log_file, FLAGS_log_level);
+
+    auto client = chat_im::RedisClientFactory::create(FLAGS_ip, FLAGS_port, FLAGS_db, FLAGS_keep_alive,"zpyredis123");
+
+    session_test(client);
+    status_test(client);
+    code_test(client);
     return 0;
 }

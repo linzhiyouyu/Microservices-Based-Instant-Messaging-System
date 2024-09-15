@@ -1,5 +1,5 @@
-main:main.cc
-	@g++ -o $@ $^ -std=c++2a -lgflags -lhiredis -lredis++ -lpthread
+main : main.cc
+	g++ -std=c++17 $^ -o $@ -lhiredis -lredis++ -lgflags 
 .PHONY:clean
 clean:
 	@rm -rf main
