@@ -1,3 +1,4 @@
+#pragma once
 #include <ev.h>
 #include <amqpcpp.h>
 #include <amqpcpp/libev.h>
@@ -8,6 +9,7 @@
 #include <functional>
 #include <memory>
 #include "logger.hpp"
+namespace chat_im {
 class MQClient {
 public:
     using message_cb = std::function<void(const char*, size_t)>;
@@ -75,3 +77,4 @@ private:
     std::unique_ptr<AMQP::TcpChannel> _channel;
     std::thread _loop_thread;
 };
+}

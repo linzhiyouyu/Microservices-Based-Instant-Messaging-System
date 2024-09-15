@@ -5,6 +5,7 @@
 #include <spdlog/async.h>
 #include <iostream>
 
+namespace chat_im {
 //mode: true - 发布模式  false - 调试模式
 
     std::shared_ptr<spdlog::logger> global_logger;
@@ -29,3 +30,4 @@
     #define WARN(format, ...) global_logger->warn("{}:{} " format, __FILE__, __LINE__, ##__VA_ARGS__);
     #define ERROR(format, ...) global_logger->error("{}:{} " format, __FILE__, __LINE__, ##__VA_ARGS__);
     #define CRITICAL(format, ...) global_logger->critical("{}:{} " format, __FILE__, __LINE__, ##__VA_ARGS__);
+}

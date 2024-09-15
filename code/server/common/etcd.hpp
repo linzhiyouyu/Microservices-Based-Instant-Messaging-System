@@ -9,7 +9,7 @@
 #include <string>
 #include <functional>
 
-
+namespace chat_im {
 //服务注册客户端类
 class Registry {
 public:
@@ -80,3 +80,4 @@ private:
     std::shared_ptr<etcd::Client> _client;
     std::shared_ptr<etcd::Watcher> _watcher;
 };
+}

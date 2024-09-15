@@ -1,3 +1,4 @@
+#pragma once
 #include <elasticlient/client.h>
 #include <cpr/cpr.h>
 #include "logger.hpp"
@@ -5,6 +6,7 @@
 #include <iostream>
 #include <json/json.h>
 
+namespace chat_im {
 class ESIndex {
 public:
     ESIndex(std::shared_ptr<elasticlient::Client> client, 
@@ -73,3 +75,4 @@ private:
     Json::Value _properties;
     std::shared_ptr<elasticlient::Client> _client;
 };
+}
