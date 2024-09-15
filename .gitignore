@@ -9,6 +9,8 @@ config.json
 *.flv
 *.mov
 *.wmv
+*.db
+config.json
 main.cpp
 main
 discovery

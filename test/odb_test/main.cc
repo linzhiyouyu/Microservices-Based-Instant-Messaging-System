@@ -10,7 +10,7 @@ DEFINE_string(host, "127.0.0.1", "这是MySQL服务器地址");
 DEFINE_int32(port, 3306, "这是MySQL服务端口");
 DEFINE_string(db, "test_db", "数据库默认库名称");
 DEFINE_string(user, "root", "用户名");
-DEFINE_string(pswd, "123456", "密码");
+DEFINE_string(pswd, "zpymysql123", "密码");
 DEFINE_string(cset, "utf8", "字符集");
 DEFINE_int32(max_pool, 3, "最大连接池数量");
 

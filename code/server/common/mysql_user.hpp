@@ -14,7 +14,7 @@ private:
 public:
     UserTable();
     UserTable(const std ::shared_ptr<odb::core::database> &db) : _db(db) {};
-    ~UserTable();
+    ~UserTable() = default;
 
     bool insert(const std::shared_ptr<User> &user)
     {

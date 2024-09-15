@@ -2,9 +2,10 @@
 #include <elasticlient/client.h>
 #include <cpr/cpr.h>
 
+
 int main() {
     //构造es客户端
-    elasticlient::Client client({"http://127.0.0.1:9200/"});
+    elasticlient::Client client({"http://elastic:zpyes123@127.0.0.1:9200/"});
     //发起请求搜索
     try {
         auto rsp = client.search("user", "_doc", "{\"query\": { \"match_all\": {} }}");

@@ -1,4 +1,4 @@
-#include "../../code/server/common/redis.hpp"
+#include "../../code/server/common/data_redis.hpp"
 
 #include <gflags/gflags.h>
 #include <thread>
