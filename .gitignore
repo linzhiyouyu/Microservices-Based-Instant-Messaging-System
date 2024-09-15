@@ -10,6 +10,7 @@ config.json
 *.mov
 *.wmv
 *.db
+test
 config.json
 main.cpp
 main
