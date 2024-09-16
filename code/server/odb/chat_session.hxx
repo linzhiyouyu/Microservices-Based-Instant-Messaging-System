@@ -7,7 +7,9 @@ namespace chat_im {
     #pragma db object table("chat_session")
     class ChatSession {
     public:
-        ChatSession()
+        ChatSession() {}
+        ChatSession(const std::string& ssid, const std::string& ssname, unsigned char sstype)
+            :_chat_session_id(ssid), _chat_session_name(ssname), _chat_session_type(sstype) {}
     private:
         friend class odb::access;
         #pragma db id auto
