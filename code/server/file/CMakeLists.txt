@@ -8,7 +8,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
 # 3. 检测并生成ODB框架代码
 #   1. 添加所需的proto映射代码文件名称
-set(proto_path ${CMAKE_CURRENT_SOURCE_DIR}/../../../proto)
+set(proto_path ${CMAKE_CURRENT_SOURCE_DIR}/../proto)
 set(proto_files file.proto base.proto)
 #   2. 检测框架代码文件是否已经生成
 set(proto_hxx "")
