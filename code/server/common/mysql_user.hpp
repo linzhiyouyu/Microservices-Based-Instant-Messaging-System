@@ -1,14 +1,15 @@
 #include "mysql.hpp"
-#include "user.hxx"
-#include "user-odb.hxx"
-
+// #include "user.hxx"
+// #include "user-odb.hxx"
+#include "../odb/chat_session_member.hxx"
+#include "../transmit/test/mysql_test/chat_session_member-odb.hxx"
 
 namespace chat_im
 {
-class UserTable
-{
-private:
-    std::shared_ptr<odb::core::database> _db;
+// class UserTable
+// {
+// private:
+//     std::shared_ptr<odb::core::database> _db;
 
 
 public:
@@ -104,33 +105,9 @@ public:
         {
             return std::vector<User>();
         }
-        std::vector<User> res;
-        try
-        {
-            odb::transaction trans(_db->begin());
-            typedef odb::query<User> query;
-            typedef odb::result<User> result;
-            std::stringstream ss;
-            ss << "user_id in (";
-            for (const auto &id : id_list)
-            {
-                ss << "'" << id << "',";
-            }
-            std::string condition = ss.str();
-            condition.pop_back();
-            condition += ")";
-            result r(_db->query<User>(condition));
-            for (result::iterator i(r.begin()); i != r.end(); ++i)
-            {
-                res.push_back(*i);
-            }
-            trans.commit();
-        }
-        catch (std::exception &e)
-        {
-            ERROR("通过用户ID批量查询用户失败:{}！", e.what());
-        }
-        return res;
-    }
-};
+    private:
+        std::shared_ptr<odb::core::database> _db;
+    };
+
+
 } // namespace chat_im
