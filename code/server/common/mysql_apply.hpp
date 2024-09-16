@@ -1,6 +1,7 @@
+#pragma once
 #include "mysql.hpp"
-#include "friend_apply.hxx"
-#include "friend_apply-odb.hxx"
+#include "apply.hxx"
+#include "apply-odb.hxx"
 
 namespace chat_im {
     class FriendApplyTable {

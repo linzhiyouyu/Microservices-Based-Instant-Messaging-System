@@ -1,17 +1,10 @@
+#pragma once
 #include "mysql.hpp"
-// #include "user.hxx"
-// #include "user-odb.hxx"
-#include "../odb/chat_session_member.hxx"
-#include "../transmit/test/mysql_test/chat_session_member-odb.hxx"
-
-namespace chat_im
-{
-// class UserTable
-// {
-// private:
-//     std::shared_ptr<odb::core::database> _db;
+#include "user.hxx"
+#include "user-odb.hxx"
 
 
+namespace chat_im {
 public:
     UserTable();
     UserTable(const std ::shared_ptr<odb::core::database> &db) : _db(db) {};

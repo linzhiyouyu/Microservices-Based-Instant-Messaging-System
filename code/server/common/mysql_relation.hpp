@@ -1,3 +1,4 @@
+#pragma once
 #include "mysql.hpp"
 #include "relation.hxx"
 #include "relation-odb.hxx"
@@ -29,7 +30,7 @@ namespace chat_im {
                 odb::transaction trans(_db->begin());
                 using query = odb::query<Relation>;
                 using result = odb::result<Relation>;
-                _db->erase<Relation>(query::user_id == uid && query::peer_id == pid);
+                _db->erase<Relation>({query::user_id == uid && query::peer_id == pid});
                 _db->erase<Relation>(query::user_id == pid && query::peer_id == uid);
                 trans.commit();
             } catch(std::exception& e) {
@@ -68,7 +69,7 @@ namespace chat_im {
                 }
                 trans.commit();
             }catch (std::exception &e) {
-                LOG_ERROR("通过用户-{}的所有好友ID失败:{}!", uid, e.what());
+                ERROR("通过用户-{}的所有好友ID失败:{}!", uid, e.what());
             }
             return res;
         }
