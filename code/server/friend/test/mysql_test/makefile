@@ -1,0 +1,2 @@
+test:test.cc chat_session-odb.cxx relation-odb.cxx apply-odb.cxx chat_session_member-odb.cxx
+	@g++ -o $@ $^ -I../../../odb/ -lodb-mysql -I../../../common -I./ -lodb -lodb-boost -lfmt -lspdlog -lgflags 
