@@ -12,7 +12,6 @@ DEFINE_int32(port, 6379, "这是服务器的端口, 格式: 8080");
 DEFINE_int32(db, 0, "库的编号：默认0号");
 DEFINE_bool(keep_alive, true, "是否进行长连接保活");
 
-
 void session_test(const std::shared_ptr<sw::redis::Redis> &client)
 {
     chat_im::Session ss(client);
@@ -91,7 +90,7 @@ int main(int argc, char *argv[])
     google::ParseCommandLineFlags(&argc, &argv, true);
     // bite_im::init_logger(FLAGS_run_mode, FLAGS_log_file, FLAGS_log_level);
 
-    auto client = chat_im::RedisClientFactory::create(FLAGS_ip, FLAGS_port, FLAGS_db, FLAGS_keep_alive,"zpyredis123");
+    auto client = chat_im::RedisClientFactory::create(FLAGS_ip, FLAGS_port, FLAGS_db, FLAGS_keep_alive, "");
 
     session_test(client);
     status_test(client);

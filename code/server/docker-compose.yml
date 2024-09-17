@@ -35,7 +35,7 @@ services:
     container_name: docker-es7-service
     environment:
       - "discovery.type=single-node"
-      - "ELASTIC_PASSWORD=zpyes123"    # 设置 elastic 用户的密码
+      - "ELASTIC_PASSWORD="    # 设置 elastic 用户的密码
       - "xpack.security.enabled=true"             # 启用安全功能
       - "xpack.security.transport.ssl.enabled=true" # 启用传输层加密
     volumes: 

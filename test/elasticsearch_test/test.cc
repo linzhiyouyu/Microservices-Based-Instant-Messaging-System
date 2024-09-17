@@ -8,10 +8,11 @@ DEFINE_string(etcd_host, "127.0.0.1:2379", "服务注册中心地址");
 DEFINE_string(base_service, "/service", "服务监控根目录");
 DEFINE_string(call_service, "/service/echo", "");
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[])
+{
     google::ParseCommandLineFlags(&argc, &argv, true);
     chat_im::init_logger(FLAGS_run_mode, FLAGS_log_file, FLAGS_log_level);
-    std::shared_ptr<elasticlient::Client> client(new elasticlient::Client({"http://elastic:zpyes123@127.0.0.1:9200/"}));
+    std::shared_ptr<elasticlient::Client> client(new elasticlient::Client({"http://127.0.0.1:9200/"}));
     chat_im::ESIndex index(client, "test_user", "_doc");
     index.append("nickname");
     index.append("phone", "keyword", "standard", true);

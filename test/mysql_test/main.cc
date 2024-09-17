@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     google::ParseCommandLineFlags(&argc, &argv, true);
     chat_im::init_logger(FLAGS_run_mode, FLAGS_log_file, FLAGS_log_level);
 
-    auto db = chat_im::ODBFactory::create("root", "zpymysql123", "127.0.0.1", "chat_im", "utf8", 0, 1);
+    auto db = chat_im::ODBFactory::create("root", "", "127.0.0.1", "chat_im", "utf8", 0, 1);
 
     chat_im::UserTable user(db);
 
