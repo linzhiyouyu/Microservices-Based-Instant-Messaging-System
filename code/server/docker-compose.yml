@@ -1,0 +1,234 @@
+version: "3.8" #定义语法版本
+services:
+  mysql:
+    image: mysql:8.0.39
+    container_name: docker-mysql8-service
+    volumes: 
+      - ./sql/:/docker-entrypoint-initdb.d/
+      - ./middleware/mysql/data:/var/lib/mysql:rw
+      - ./middleware/mysql/logs:/var/log/mysql:rw
+      - ./conf/mysql:/etc/mysql/
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456
+    ports:
+      - 3306:3306
+    restart: always
+    networks:
+      - im-network
+
+  redis:
+    image: redis:6.0.16
+    container_name: docker-redis6-service
+    volumes: 
+      - ./conf/redis/redis.conf:/etc/redis/redis.conf:rw
+      - ./middleware/redis/data:/var/lib/redis:rw
+      - ./middleware/redis/logs:/var/log/redis:rw
+    command: redis-server /etc/redis/redis.conf
+    ports:
+      - 6379:6379
+    restart: always
+    networks:
+      - im-network
+
+  elasticsearch:
+    image: elasticsearch:7.17.18
+    container_name: docker-es7-service
+    environment:
+      - "discovery.type=single-node"
+      - "ELASTIC_PASSWORD=zpyes123"    # 设置 elastic 用户的密码
+      - "xpack.security.enabled=true"             # 启用安全功能
+      - "xpack.security.transport.ssl.enabled=true" # 启用传输层加密
+    volumes: 
+      - ./conf/es/elasticsearch.yml:/etc/elasticsearch/elasticsearch.yml
+      - ./middleware/es/data:/var/lib/elasticsearch
+      - ./middleware/es/logs:/var/log/elasticsearch
+      - ./middleware/es/plugins:/usr/share/elasticsearch/plugins
+    ports:
+      - 9200:9200
+      - 9300:9300
+    restart: always
+    networks:
+      - im-network
+
+  rabbitmq:
+    image: rabbitmq:3.9.13
+    container_name: docker-rabbitmq-service
+    volumes: 
+      - ./conf/rabbitmq/rabbitmq-env.conf:/etc/rabbitmq/rabbitmq-env.conf
+      - ./middleware/rabbitmq/data:/var/lib/rabbitmq:rw
+      - ./middleware/rabbitmq/logs:/var/log/rabbitmq:rw
+    environment:
+      RABBITMQ_DEFAULT_USER: root
+      RABBITMQ_DEFAULT_PASS: zpymq123
+    ports:
+      - 5672:5672
+      - 15672:15672
+    restart: always
+    networks:
+      - im-network
+
+  etcd:
+    image: quay.io/coreos/etcd:v3.3.25
+    container_name: docker-etcd-service
+    environment:
+      - ETCD_NAME=etcd-s1
+      - ETCD_DATA_DIR=/var/lib/etcd
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://0.0.0.0:2379
+    volumes: 
+      - ./middleware/etcd/data:/var/lib/etcd
+    ports:
+      - 2379:2379
+      - 2380:2380
+    restart: always
+    networks:
+      - im-network
+
+  file_server:
+    build: file
+    container_name: docker-file-server
+    volumes: 
+      - ./nc:/bin/nc
+      - ./entrypoint.sh:/entrypoint.sh
+      - ./middleware/file_server/data:/im/data
+      - ./middleware/file_server/logs:/im/logs
+      - ./conf:/im/conf
+    ports:
+      - 10002:10002
+    restart: always
+    depends_on:
+      - etcd
+    entrypoint:
+      /entrypoint.sh -h etcd -p 2379 -c "/im/bin/file_server -flagfile=/im/conf/server_file.conf"
+    networks:
+      - im-network
+
+  speech_server:
+    build: speech
+    container_name: docker-speech-server
+    volumes: 
+      - ./nc:/bin/nc
+      - ./entrypoint.sh:/entrypoint.sh
+      - ./middleware/speech_server/data:/im/data
+      - ./middleware/speech_server/logs:/im/logs
+      - ./conf:/im/conf
+    ports:
+      - 10001:10001
+    restart: always
+    depends_on:
+      - etcd
+    entrypoint:
+      /entrypoint.sh -h etcd -p 2379 -c "/im/bin/speech_server -flagfile=/im/conf/server_speech.conf"
+    networks:
+      - im-network
+
+  user_server:
+    build: user
+    container_name: docker-user-server
+    volumes: 
+      - ./nc:/bin/nc
+      - ./entrypoint.sh:/entrypoint.sh
+      - ./middleware/user_server/data:/im/data
+      - ./middleware/user_server/logs:/im/logs
+      - ./conf:/im/conf
+    ports:
+      - 10003:10003
+    restart: always
+    depends_on:
+      - redis
+      - mysql
+      - elasticsearch
+      - etcd
+    entrypoint:
+      /entrypoint.sh -h etcd -p 2379,9200,3306,6379 -c "/im/bin/user_server -flagfile=/im/conf/server_user.conf"
+    networks:
+      - im-network
+
+  friend_server:
+    build: friend
+    container_name: docker-friend-server
+    volumes: 
+      - ./nc:/bin/nc
+      - ./entrypoint.sh:/entrypoint.sh
+      - ./middleware/friend_server/data:/im/data
+      - ./middleware/friend_server/logs:/im/logs
+      - ./conf:/im/conf
+    ports:
+      - 10006:10006
+    restart: always
+    depends_on:
+      - mysql
+      - elasticsearch
+      - etcd
+    entrypoint:
+      /entrypoint.sh -h etcd -p 2379,9200,3306 -c "/im/bin/friend_server -flagfile=/im/conf/server_friend.conf"
+    networks:
+      - im-network
+
+  message_server:
+    build: message
+    container_name: docker-message-server
+    volumes: 
+      - ./nc:/bin/nc
+      - ./entrypoint.sh:/entrypoint.sh
+      - ./middleware/message_server/data:/im/data
+      - ./middleware/message_server/logs:/im/logs
+      - ./conf:/im/conf
+    ports:
+      - 10005:10005
+    restart: always
+    depends_on:
+      - rabbitmq
+      - mysql
+      - elasticsearch
+      - etcd
+    entrypoint:
+      /entrypoint.sh -h etcd -p 2379,5672,9200,3306 -c "/im/bin/message_server -flagfile=/im/conf/server_message.conf"
+    networks:
+      - im-network
+
+  transmit_server:
+    build: transmit
+    container_name: docker-transmit-server
+    volumes: 
+      - ./nc:/bin/nc
+      - ./entrypoint.sh:/entrypoint.sh
+      - ./middleware/transmit_server/data:/im/data
+      - ./middleware/transmit_server/logs:/im/logs
+      - ./conf:/im/conf
+    ports:
+      - 10004:10004
+    restart: always
+    depends_on:
+      - rabbitmq
+      - mysql
+      - etcd
+    entrypoint:
+      /entrypoint.sh -h etcd -p 2379,5672,3306 -c "/im/bin/transmit_server -flagfile=/im/conf/server_transmit.conf"
+    networks:
+      - im-network
+
+  gateway_server:
+    build: gateway
+    container_name: docker-gateway-server
+    volumes: 
+      - ./nc:/bin/nc
+      - ./entrypoint.sh:/entrypoint.sh
+      - ./middleware/gateway_server/data:/im/data
+      - ./middleware/gateway_server/logs:/im/logs
+      - ./conf:/im/conf
+    ports:
+      - 9000:9000
+      - 9001:9001
+    restart: always
+    depends_on:
+      - redis
+      - etcd
+    entrypoint:
+      /entrypoint.sh -h etcd -p 2379,6379 -c "/im/bin/gateway_server -flagfile=/im/conf/server_gateway.conf"
+    networks:
+      - im-network
+
+networks:
+  im-network:
+    driver: bridge

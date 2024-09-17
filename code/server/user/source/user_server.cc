@@ -32,6 +32,7 @@ DEFINE_string(redis_host, "127.0.0.1", "Redis服务器访问地址");
 DEFINE_int32(redis_port, 6379, "Redis服务器访问端口");
 DEFINE_int32(redis_db, 0, "Redis默认库号");
 DEFINE_bool(redis_keep_alive, true, "Redis长连接保活选项");
+DEFINE_string(redis_password, "zpyredis123", "Redis密码");
 
 DEFINE_string(dms_key_id, "", "短信平台密钥ID");
 DEFINE_string(dms_key_secret, "", "短信平台密钥");
@@ -46,7 +47,7 @@ int main(int argc, char *argv[])
     usb.make_es_object({FLAGS_es_host});
     usb.make_mysql_object(FLAGS_mysql_user, FLAGS_mysql_pswd, FLAGS_mysql_host,
                           FLAGS_mysql_db, FLAGS_mysql_cset, FLAGS_mysql_port, FLAGS_mysql_pool_count);
-    usb.make_redis_object(FLAGS_redis_host, FLAGS_redis_port, FLAGS_redis_db, FLAGS_redis_keep_alive);
+    usb.make_redis_object(FLAGS_redis_host, FLAGS_redis_port, FLAGS_redis_db, FLAGS_redis_keep_alive, FLAGS_redis_password);
     usb.make_discovery_object(FLAGS_registry_host, FLAGS_base_service, FLAGS_file_service);
     usb.make_rpc_server(FLAGS_listen_port, FLAGS_rpc_timeout, FLAGS_rpc_threads);
     usb.make_registry_object(FLAGS_registry_host, FLAGS_base_service + FLAGS_instance_name, FLAGS_access_host);

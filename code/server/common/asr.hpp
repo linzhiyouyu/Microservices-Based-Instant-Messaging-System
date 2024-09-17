@@ -1,5 +1,5 @@
 #pragma once
-#include "../include/aip-cpp-sdk/speech.h"
+#include "aip-cpp-sdk/speech.h"
 #include "logger.hpp"
 namespace chat_im
 {

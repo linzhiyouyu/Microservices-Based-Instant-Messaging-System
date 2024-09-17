@@ -1,5 +1,5 @@
 syntax = "proto3";
-package bite_im;
+package chat_im;
 import "base.proto";
 
 option cc_generic_services = true;

@@ -1,7 +1,7 @@
 #pragma once
 #include "mysql.hpp"
-#include "apply.hxx"
-#include "apply-odb.hxx"
+#include "friend_apply.hxx"
+#include "friend_apply-odb.hxx"
 
 namespace chat_im {
     class FriendApplyTable {
@@ -19,7 +19,25 @@ namespace chat_im {
             }
             return true;
         }
-        bool remove(const std::string& eid);
+        bool exists(const std::string &uid, const std::string &pid)
+        {
+            bool flag = false;
+            try
+            {
+                typedef odb::query<FriendApply> query;
+                typedef odb::result<FriendApply> result;
+                odb::transaction trans(_db->begin());
+                result r(_db->query<FriendApply>(query::user_id == uid && query::peer_id == pid));
+                DEBUG("{} - {} 好友事件数量：{}", uid, pid, r.size());
+                flag = !r.empty();
+                trans.commit();
+            }
+            catch (std::exception &e)
+            {
+                ERROR("获取好友申请事件失败:{}-{}-{}！", uid, pid, e.what());
+            }
+            return flag;
+        }
         bool remove(const std::string &uid, const std::string &pid) {
             try {
                 odb::transaction trans(_db->begin());

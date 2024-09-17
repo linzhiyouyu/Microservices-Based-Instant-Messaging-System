@@ -14,9 +14,9 @@ DEFINE_int32(listen_port, 10001, "Rpc服务器监听端口");
 DEFINE_int32(rpc_timeout, -1, "Rpc调用超时时间");
 DEFINE_int32(rpc_threads, 1, "Rpc的IO线程数量");
 
-DEFINE_string(app_id, "60694095", "语音平台应用ID");
-DEFINE_string(api_key, "PWn6zlsxym8VwpBW8Or4PPGe", "语音平台API密钥");
-DEFINE_string(secret_key, "Bl0mn74iyAkr3FzCo5TZV7lBq7NYoms9", "语音平台加密密钥");
+DEFINE_string(app_id, "", "语音平台应用ID");
+DEFINE_string(api_key, "", "语音平台API密钥");
+DEFINE_string(secret_key, "", "语音平台加密密钥");
 
 int main(int argc, char *argv[])
 {

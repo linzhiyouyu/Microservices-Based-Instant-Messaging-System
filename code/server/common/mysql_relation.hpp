@@ -30,8 +30,8 @@ namespace chat_im {
                 odb::transaction trans(_db->begin());
                 using query = odb::query<Relation>;
                 using result = odb::result<Relation>;
-                _db->erase<Relation>({query::user_id == uid && query::peer_id == pid});
-                _db->erase<Relation>(query::user_id == pid && query::peer_id == uid);
+                _db->erase_query<Relation>(query::user_id == uid && query::peer_id == pid);
+                _db->erase_query<Relation>(query::user_id == pid && query::peer_id == uid);
                 trans.commit();
             } catch(std::exception& e) {
                 ERROR("删除好友关系失败{}-{}:{}!", uid, pid, e.what());

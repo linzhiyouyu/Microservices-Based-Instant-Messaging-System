@@ -764,9 +764,10 @@ namespace chat_im
         void make_redis_object(const std::string &host,
                                int port,
                                int db,
-                               bool keep_alive)
+                               bool keep_alive,
+                               const std::string &password)
         {
-            _redis_client = RedisClientFactory::create(host, port, db, keep_alive,"zpyredis123");
+            _redis_client = RedisClientFactory::create(host, port, db, keep_alive, password);
         }
         // 用于构造服务发现客户端&信道管理对象
         void make_discovery_object(const std::string &reg_host,

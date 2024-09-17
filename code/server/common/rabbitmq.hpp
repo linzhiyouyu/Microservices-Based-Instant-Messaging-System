@@ -12,6 +12,7 @@
 namespace chat_im {
 class MQClient {
 public:
+    using ptr = std::shared_ptr<MQClient>;
     using message_cb = std::function<void(const char*, size_t)>;
     MQClient(const std::string &user,
             const std::string& pswd,
